@@ -71,7 +71,7 @@ INSERT INTO Customers (first_name, last_name, email, phone)
 VALUES ("John", "Douglas", "john@example.com", "123-456-7890"),
 ("Bill", "Richard", "bill.r@mail.com", "120-345-6789"),
 ("Carl", "Darnell", "carl.darnell@example.com", "123-045-8962"),
-("Alex", "Richard", "alex.r@example.com");
+("Alex", "Richard", "alex.r@example.com", "120-783-5413");
 
 -- Inserting card types
 INSERT INTO CardsPrimaryType (identity_id, description)
