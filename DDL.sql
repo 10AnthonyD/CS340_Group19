@@ -41,7 +41,7 @@ CREATE TABLE Cards (
 	primary_type VARCHAR(20),
 	PRIMARY KEY (card_id),
 	FOREIGN KEY (primary_type) REFERENCES CardPrimaryTypes(identity_id)
-	ON DELETE NO ACTION;
+	ON DELETE NO ACTION
 );
 
 -- An order of cards.
@@ -52,7 +52,7 @@ CREATE TABLE Orders (
 	credit_card VARCHAR(16),
 	PRIMARY KEY (order_id),
 	FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
-	ON DELETE CASCADE;
+	ON DELETE CASCADE
 );
 
 -- An intersection table to facilitate the M : N relationship between Cards and Orders.
@@ -66,7 +66,7 @@ CREATE TABLE CardsPerOrder (
 	FOREIGN KEY (order_id) REFERENCES Orders(order_id)
 	ON DELETE CASCADE,
 	FOREIGN KEY (card_id) REFERENCES Cards(card_id)
-	ON DELETE CASCADE;
+	ON DELETE CASCADE
 );
 
 -- Inserting sample data
