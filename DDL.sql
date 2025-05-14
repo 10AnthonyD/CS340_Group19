@@ -17,8 +17,8 @@ CREATE TABLE Customers (
 );
 
 -- A category table storing information about all card primary types.
-DROP TABLE IF EXISTS CardsPrimaryType;
-CREATE TABLE CardsPrimaryType (
+DROP TABLE IF EXISTS CardPrimaryTypes;
+CREATE TABLE CardPrimaryTypes (
 	identity_id VARCHAR(20) NOT NULL,
 	description VARCHAR(255),
 	PRIMARY KEY (identity_id)
@@ -40,7 +40,8 @@ CREATE TABLE Cards (
 	card_action VARCHAR(255),
 	primary_type VARCHAR(20),
 	PRIMARY KEY (card_id),
-	FOREIGN KEY (primary_type) REFERENCES CardsPrimaryType(identity_id)
+	FOREIGN KEY (primary_type) REFERENCES CardPrimaryTypes(identity_id)
+	ON DELETE NO ACTION;
 );
 
 -- An order of cards.
@@ -51,6 +52,7 @@ CREATE TABLE Orders (
 	credit_card VARCHAR(16),
 	PRIMARY KEY (order_id),
 	FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+	ON DELETE CASCADE;
 );
 
 -- An intersection table to facilitate the M : N relationship between Cards and Orders.
@@ -61,8 +63,10 @@ CREATE TABLE CardsPerOrder (
 	card_id int(11) NOT NULL,
 	quantity int(11) NOT NULL,
 	PRIMARY KEY (order_details_id),
-	FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+	FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+	ON DELETE CASCADE,
 	FOREIGN KEY (card_id) REFERENCES Cards(card_id)
+	ON DELETE CASCADE;
 );
 
 -- Inserting sample data
@@ -74,7 +78,7 @@ VALUES ("John", "Douglas", "john@example.com", "123-456-7890"),
 ("Alex", "Richard", "alex.r@example.com", "120-783-5413");
 
 -- Inserting card types
-INSERT INTO CardsPrimaryType (identity_id, description)
+INSERT INTO CardPrimaryTypes (identity_id, description)
 VALUES ("Artifact", "Can be played only during player's main phase. Provide state effect to gameplay."),
 ("Creature", "Can be played only during player's main phase. Creatures can perform combat, and if legendary can be used as commanders."),
 ("Enchantment", "Can be played only during player's main phase. Provide state effect to gameplay."),
@@ -84,14 +88,17 @@ VALUES ("Artifact", "Can be played only during player's main phase. Provide stat
 
 -- Inserting Cards
 INSERT INTO Cards (card_name, is_uncolored, is_red, is_green, is_white, is_black, is_blue, price, card_action, primary_type)
-VALUES ("Sol Ring", 1, 0, 0, 0, 0, 0, 1.35, "Tap and create 2 uncolored mana.", (SELECT identity_id FROM CardsPrimaryType WHERE identity_id="Artifact")),
+VALUES ("Sol Ring", 1, 0, 0, 0, 0, 0, 1.35, "Tap and create 2 uncolored mana.", (SELECT identity_id FROM CardPrimaryTypes WHERE identity_id="Artifact")),
 ("Path to Exile", 0, 0, 0, 1, 0, 0, 0.9,
 	"Exile target creature. Its controller may search his or her library for a basic land card, put thet card onto the battlefield tapped, then shuffle his or her library.",
-	(SELECT identity_id FROM CardsPrimaryType WHERE identity_id="Instant")),
-("Snap", 0, 0, 0, 0, 0, 1, 1.5, "Return target creature to its owner's hand. Untap up to two lands.", (SELECT identity_id FROM CardsPrimaryType WHERE identity_id="Instant")),
+	(SELECT identity_id FROM CardPrimaryTypes WHERE identity_id="Instant")),
+("Snap", 0, 0, 0, 0, 0, 1, 1.5, "Return target creature to its owner's hand. Untap up to two lands.", (SELECT identity_id FROM CardPrimaryTypes WHERE identity_id="Instant")),
 ("Underworld Breach", 0, 1, 0, 0, 0, 0, 11.32,
 	"Each nonland card in your graveyard has excape. The escape cost is equial to the card's mana cost plus exile three other cards from your graveyard.",
-	(SELECT identity_id FROM CardsPrimaryType WHERE identity_id="Enchantment"));
+	(SELECT identity_id FROM CardPrimaryTypes WHERE identity_id="Enchantment")),
+("Samut, Vizier of Naktamun", 0, 1, 1, 0, 0, 0, 7.11,
+	"First strike, vigilance, haste.  Whenever a creature you control deals combat damage to a player, if that creature entered the battlefield this turn, draw a card.",
+	(Select identity_id FROM CardPrimaryTypes WHERE identity_id="Creature"));
 	
 -- Inserting Orders
 INSERT INTO Orders (customer_id, credit_card)
